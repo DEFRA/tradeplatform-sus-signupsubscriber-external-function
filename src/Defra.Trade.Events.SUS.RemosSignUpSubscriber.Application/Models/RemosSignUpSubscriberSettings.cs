@@ -5,7 +5,6 @@ namespace Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Models;
 
 public sealed class RemosSignUpSubscriberSettings
 {
-
     public const string RemosSignUpSubscriberSettingsName = "EhcoGcSubscriber";
 #if DEBUG
 
@@ -23,5 +22,7 @@ public sealed class RemosSignUpSubscriberSettings
     public const string TradeEventInfo = Common.Functions.Constants.QueueName.DefaultEventsInfoQueueName;
 
     public const string AppConfigSentinelName = "Sentinel";
+
     public string RemosSignUpCreatedQueue { get; set; } = DefaultQueueName;
+
 }

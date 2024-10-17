@@ -47,6 +47,8 @@ public sealed class LogisticsLocationEstablishmentCreateValidatorTests : Validat
 
         var location = new LogisticsLocationEstablishmentCreate()
         {
+            Id = Guid.NewGuid(),
+            TradePartyId = Guid.NewGuid(),
             Name = Guid.NewGuid().ToString(),
             RemosEstablishmentSchemeNumber = Guid.NewGuid().ToString()[..10],
             Address = address,

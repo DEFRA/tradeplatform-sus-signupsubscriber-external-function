@@ -55,7 +55,15 @@ public sealed class RemosSignUpRequestProfileTests
                 {
                     RemosEstablishmentSchemeNumber = l.RmsEstablishmentNumber,
                     Name = l.LocationName,
-                    Address = new()
+                    ApprovalStatus = 434800000,
+                    Email = l.ContactEmailAddress,
+                    Id = new Guid?(),
+                    LastModifiedDate =  DateTime.Now,
+                    NI_GBFlag = "test",
+                    CreatedDate = DateTime.Now,
+                    TradeAddressId = new Guid?(),
+                    TradePartyId = new Guid?(),
+                    Address = new Address
                     {
                         LineOne = l.AddressLine1,
                         LineTwo = l.AddressLine2,
@@ -123,6 +131,8 @@ public sealed class RemosSignUpRequestProfileTests
                 },
                 AuthorisedSignatory = new()
                 {
+                    Id = Guid.NewGuid(),
+                    TradePartyId = Guid.NewGuid(),
                     Name = expected.AuthorisedSignatoryName,
                     EmailAddress = expected.AuthorisedSignatoryEmail,
                     Position = expected.AuthorisedSignatoryPosition

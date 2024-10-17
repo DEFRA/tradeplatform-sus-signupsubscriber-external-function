@@ -48,6 +48,8 @@ public sealed class TradeContactUpdateValidatorTests : ValidatorTestBase<TradeCo
         // Arrange
         var contact = new TradeContactUpdate()
         {
+            Id = Guid.NewGuid(),
+            TradePartyId = Guid.NewGuid(),
             PersonName = Guid.NewGuid().ToString(),
             Position = Guid.NewGuid().ToString(),
             Email = Guid.NewGuid().ToString(),

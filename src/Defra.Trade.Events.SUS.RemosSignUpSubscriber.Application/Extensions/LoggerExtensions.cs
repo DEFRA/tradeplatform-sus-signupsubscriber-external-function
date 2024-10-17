@@ -1,10 +1,12 @@
 ﻿// Copyright DEFRA (c). All rights reserved.
 // Licensed under the Open Government License v3.0.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
 namespace Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Extensions;
 
+[ExcludeFromCodeCoverage(Justification = "Extensions cannot be feasibly tested")]
 public static partial class LoggerExtensions
 {
     // Entry point
