@@ -3,7 +3,7 @@
 
 using System.Runtime.ExceptionServices;
 using AutoMapper;
-using Defra.Trade.Common.Functions.Models;
+using Defra.Trade.Common.Functions.Isolated.Models;
 using Defra.Trade.Crm;
 using Defra.Trade.Crm.Clients;
 using Defra.Trade.Crm.Exceptions;

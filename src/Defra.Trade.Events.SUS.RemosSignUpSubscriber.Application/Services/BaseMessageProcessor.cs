@@ -2,8 +2,8 @@
 // Licensed under the Open Government License v3.0.
 
 using AutoMapper;
-using Defra.Trade.Common.Functions.Interfaces;
-using Defra.Trade.Common.Functions.Models;
+using Defra.Trade.Common.Functions.Isolated.Interfaces;
+using Defra.Trade.Common.Functions.Isolated.Models;
 using Defra.Trade.Crm;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Dtos.Inbound.Interfaces;
 using Microsoft.Extensions.Logging;

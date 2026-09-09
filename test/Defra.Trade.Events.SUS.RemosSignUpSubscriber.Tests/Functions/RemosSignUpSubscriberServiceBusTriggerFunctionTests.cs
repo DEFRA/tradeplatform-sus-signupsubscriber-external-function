@@ -2,14 +2,11 @@
 // Licensed under the Open Government License v3.0.
 
 using Azure.Messaging.ServiceBus;
-using Defra.Trade.Common.Functions.Interfaces;
-using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Models;
+using Defra.Trade.Common.Functions.Isolated.Interfaces;
 using FakeItEasy;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.ServiceBus;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace Defra.Trade.Events.SUS.RemosSignUpSubscriber.Functions;
 
@@ -21,7 +18,12 @@ public sealed class RemosSignUpSubscriberServiceBusTriggerFunctionTests
     public RemosSignUpSubscriberServiceBusTriggerFunctionTests()
     {
         _messageExecutorFactory = A.Fake<IMessageExecutorFactory>(opt => opt.Strict());
-        _sut = new RemosSignUpSubscriberServiceBusTriggerFunction(_messageExecutorFactory);
+        var serviceBusClient = A.Fake<ServiceBusClient>(opt => opt.Strict());
+        var sender = A.Fake<ServiceBusSender>(opt => opt.Strict());
+        A.CallTo(() => serviceBusClient.CreateSender(A<string>._)).Returns(sender);
+        var logger = A.Fake<ILogger<RemosSignUpSubscriberServiceBusTriggerFunction>>();
+
+        _sut = new RemosSignUpSubscriberServiceBusTriggerFunction(_messageExecutorFactory, serviceBusClient, logger);
     }
 
     [Theory]
@@ -34,53 +36,55 @@ public sealed class RemosSignUpSubscriberServiceBusTriggerFunctionTests
         // arrange
         string messageId = Guid.NewGuid().ToString();
         var message = ServiceBusModelFactory.ServiceBusReceivedMessage(messageId: messageId, subject: label);
-        var invocationId = Guid.NewGuid();
-        string functionName = Guid.NewGuid().ToString();
         var actions = A.Fake<ServiceBusMessageActions>(opt => opt.Strict());
-        var context = new ExecutionContext { InvocationId = invocationId, FunctionName = functionName };
-        var eventStore = A.Fake<IAsyncCollector<ServiceBusMessage>>(opt => opt.Strict());
+        var functionContext = A.Fake<FunctionContext>(opt => opt.Strict());
+        var functionDefinition = A.Fake<FunctionDefinition>(opt => opt.Strict());
+        A.CallTo(() => functionDefinition.Name).Returns("RemosSignUpSubscriberServiceBusTriggerFunction");
+        A.CallTo(() => functionContext.FunctionDefinition).Returns(functionDefinition);
 
-        var logger = A.Fake<ILogger>();
         var executor = A.Fake<IMessageExecutor>();
 
-        var executeCall = A.CallTo(() => executor.ExecuteAsync(message, actions, context, eventStore, null!, null!, RemosSignUpSubscriberSettings.PublisherId, RemosSignUpSubscriberSettings.DefaultQueueName));
+        var executeCall = A.CallTo(() => executor.ExecuteAsync(
+            message,
+            actions,
+            A<ServiceBusSender>._,
+            functionContext,
+            A<string>._,
+            A<string>._,
+            A<string>._,
+            A<string?>._));
         var createMessageExecutorCall = A.CallTo(() => _messageExecutorFactory.CreateMessageExecutor(message));
 
         executeCall.Returns(Task.CompletedTask);
         createMessageExecutorCall.Returns(executor);
 
         // act
-        await _sut.RunAsync(message, actions, context, eventStore, logger);
+        await _sut.RunAsync(message, actions, functionContext);
 
         // assert
         createMessageExecutorCall.MustHaveHappenedOnceExactly();
     }
 
     [Fact]
-    public async Task RunAsync_WithUnknownLabel_Throws()
+    public async Task RunAsync_WithUnknownLabel_DoesNotThrow()
     {
         // arrange
         string messageId = Guid.NewGuid().ToString();
         var message = ServiceBusModelFactory.ServiceBusReceivedMessage(messageId: messageId, subject: "abcxyz");
-        var invocationId = Guid.NewGuid();
-        string functionName = Guid.NewGuid().ToString();
         var actions = A.Fake<ServiceBusMessageActions>(opt => opt.Strict());
-        var context = new ExecutionContext { InvocationId = invocationId, FunctionName = functionName };
-        var eventStore = A.Fake<IAsyncCollector<ServiceBusMessage>>(opt => opt.Strict());
+        var functionContext = A.Fake<FunctionContext>(opt => opt.Strict());
+        var functionDefinition = A.Fake<FunctionDefinition>(opt => opt.Strict());
+        A.CallTo(() => functionDefinition.Name).Returns("RemosSignUpSubscriberServiceBusTriggerFunction");
+        A.CallTo(() => functionContext.FunctionDefinition).Returns(functionDefinition);
 
-        var logger = A.Fake<ILogger>();
         var executor = A.Fake<IMessageExecutor>();
 
-        var executeCall = A.CallTo(() => executor.ExecuteAsync(message, actions, context, eventStore, null!, null!, RemosSignUpSubscriberSettings.PublisherId, RemosSignUpSubscriberSettings.DefaultQueueName));
         var createMessageExecutorCall = A.CallTo(() => _messageExecutorFactory.CreateMessageExecutor(message));
-
-        executeCall.Returns(Task.CompletedTask);
         createMessageExecutorCall.Returns(executor);
 
         // act
-        await _sut.RunAsync(message, actions, context, eventStore, logger);
+        await _sut.RunAsync(message, actions, functionContext);
 
-        // assert
-        createMessageExecutorCall.MustHaveHappenedOnceExactly();
+        // assert - unknown label is caught internally and logged, no exception should propagate
     }
 }

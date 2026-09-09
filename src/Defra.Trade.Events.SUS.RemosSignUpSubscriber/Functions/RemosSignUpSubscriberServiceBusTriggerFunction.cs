@@ -4,12 +4,11 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Defra.Trade.Common.Functions.Extensions;
-using Defra.Trade.Common.Functions.Interfaces;
+using Defra.Trade.Common.Functions.Isolated.Extensions;
+using Defra.Trade.Common.Functions.Isolated.Interfaces;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Extensions;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Models;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.ServiceBus;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace Defra.Trade.Events.SUS.RemosSignUpSubscriber.Functions;
@@ -17,22 +16,26 @@ namespace Defra.Trade.Events.SUS.RemosSignUpSubscriber.Functions;
 public sealed class RemosSignUpSubscriberServiceBusTriggerFunction
 {
     private readonly IMessageExecutorFactory _messageExecutorFactory;
+    private readonly ServiceBusSender _eventStoreSender;
+    private readonly ILogger<RemosSignUpSubscriberServiceBusTriggerFunction> _logger;
 
-    public RemosSignUpSubscriberServiceBusTriggerFunction(IMessageExecutorFactory messageExecutorFactory)
+    public RemosSignUpSubscriberServiceBusTriggerFunction(
+        IMessageExecutorFactory messageExecutorFactory,
+        ServiceBusClient serviceBusClient,
+        ILogger<RemosSignUpSubscriberServiceBusTriggerFunction> logger)
     {
         _messageExecutorFactory = messageExecutorFactory;
+        _eventStoreSender = serviceBusClient.CreateSender(RemosSignUpSubscriberSettings.TradeEventInfo);
+        _logger = logger;
     }
 
-    [ServiceBusAccount(RemosSignUpSubscriberSettings.ConnectionStringConfigurationKey)]
-    [FunctionName(nameof(RemosSignUpSubscriberServiceBusTriggerFunction))]
+    [Function(nameof(RemosSignUpSubscriberServiceBusTriggerFunction))]
     public async Task RunAsync(
-        [ServiceBusTrigger(queueName: RemosSignUpSubscriberSettings.DefaultQueueName, IsSessionsEnabled = false)] ServiceBusReceivedMessage message,
+        [ServiceBusTrigger(queueName: RemosSignUpSubscriberSettings.DefaultQueueName, Connection = RemosSignUpSubscriberSettings.ConnectionStringConfigurationKey, IsSessionsEnabled = false)] ServiceBusReceivedMessage message,
         ServiceBusMessageActions messageActions,
-        ExecutionContext executionContext,
-        [ServiceBus(RemosSignUpSubscriberSettings.TradeEventInfo)] IAsyncCollector<ServiceBusMessage> eventStoreCollector,
-        ILogger logger)
+        FunctionContext functionContext)
     {
-        await RunInternalAsync(message, messageActions, eventStoreCollector, executionContext, logger);
+        await RunInternalAsync(message, messageActions, _eventStoreSender, functionContext, _logger);
     }
 
     private static string? GetCrmRequestType(ServiceBusReceivedMessage message) => message.Label() switch
@@ -46,28 +49,28 @@ public sealed class RemosSignUpSubscriberServiceBusTriggerFunction
 
     private async Task RunInternalAsync(
         ServiceBusReceivedMessage message,
-        ServiceBusMessageActions messageReceiver,
-        IAsyncCollector<ServiceBusMessage> eventStoreCollector,
-        ExecutionContext executionContext,
+        ServiceBusMessageActions messageActions,
+        ServiceBusSender eventStoreSender,
+        FunctionContext functionContext,
         ILogger logger)
     {
         try
         {
-            logger.MessageReceived(message.MessageId, executionContext.FunctionName);
+            logger.MessageReceived(message.MessageId, functionContext.FunctionDefinition.Name);
 
             await _messageExecutorFactory
                 .CreateMessageExecutor(message)
                 .ExecuteAsync(
                     message,
-                    messageReceiver,
-                    executionContext,
-                    eventStoreCollector,
+                    messageActions,
+                    eventStoreSender,
+                    functionContext,
                     RemosSignUpSubscriberSettings.DefaultQueueName,
                     RemosSignUpSubscriberSettings.PublisherId,
                     RemosSignUpSubscriberSettings.PublisherId,
                     GetCrmRequestType(message));
 
-            logger.LogInformation("Finished processing Messages Id : {MessageId} received on {FunctionName}", message.MessageId, executionContext.FunctionName);
+            logger.LogInformation("Finished processing Messages Id : {MessageId} received on {FunctionName}", message.MessageId, functionContext.FunctionDefinition.Name);
         }
         catch (Exception ex)
         {
