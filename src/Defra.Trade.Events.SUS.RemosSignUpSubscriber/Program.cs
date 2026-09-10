@@ -4,7 +4,6 @@
 using System.Linq;
 using Azure.Messaging.ServiceBus;
 using Defra.Trade.Common.AppConfig;
-using Defra.Trade.Common.Logging.Extensions;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Models;
@@ -44,8 +43,6 @@ var host = new HostBuilder()
             .AddServiceRegistrations(configuration)
             .AddApplication()
             .ConfigureMapper();
-
-        services.AddFunctionLogging("RemosSignUpSubscriber");
 
         var healthChecksBuilder = services.AddHealthChecks();
         HealthChecksRegistration.RegisterHealthChecks(healthChecksBuilder, services, configuration);
