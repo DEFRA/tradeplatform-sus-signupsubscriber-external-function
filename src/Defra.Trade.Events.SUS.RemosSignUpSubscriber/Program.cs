@@ -38,7 +38,8 @@ var host = new HostBuilder()
                 return new ServiceBusClient(ns, new Azure.Identity.DefaultAzureCredential());
 #endif
             })
-
+            .AddApplicationInsightsTelemetryWorkerService()
+            .ConfigureFunctionsApplicationInsights()
             .AddTradeAppConfiguration(configuration)
             .AddServiceRegistrations(configuration)
             .AddApplication()
