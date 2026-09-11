@@ -1,7 +1,6 @@
 // Copyright DEFRA (c). All rights reserved.
 // Licensed under the Open Government License v3.0.
 
-using System.Linq;
 using Azure.Messaging.ServiceBus;
 using Defra.Trade.Common.AppConfig;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber;
@@ -37,7 +36,8 @@ var host = new HostBuilder()
         var configuration = context.Configuration;
 
         services
-            .AddSingleton(_ => {
+            .AddSingleton(_ =>
+            {
 #if DEBUG
                 string? connectionString = configuration.GetValue<string>(RemosSignUpSubscriberSettings.ConnectionStringConfigurationKey);
                 return new ServiceBusClient(connectionString);
