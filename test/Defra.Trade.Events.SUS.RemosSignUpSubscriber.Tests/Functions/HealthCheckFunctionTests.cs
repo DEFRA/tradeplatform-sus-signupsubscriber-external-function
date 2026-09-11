@@ -6,8 +6,6 @@ using Defra.Trade.Common.Function.Health;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.UnitTests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Shouldly;
@@ -30,7 +28,7 @@ public class HealthCheckFunctionTests
     public void RunAsync_HasFunctionAttribute()
     {
         // Arrange & Act
-        var attribute = FunctionTestHelpers.MethodHasSingleAttribute<HealthCheckFunction, FunctionNameAttribute>(
+        var attribute = FunctionTestHelpers.MethodHasSingleAttribute<HealthCheckFunction, FunctionAttribute>(
             nameof(HealthCheckFunction.RunAsync));
 
         // Assert

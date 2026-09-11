@@ -1,8 +1,8 @@
 ﻿// Copyright DEFRA (c). All rights reserved.
 // Licensed under the Open Government License v3.0.
 
-using Defra.Trade.Common.Functions.Models.Enum;
-using Defra.Trade.Common.Functions.Validation;
+using Defra.Trade.Common.Functions.Isolated.Models.Enum;
+using Defra.Trade.Common.Functions.Isolated.Validation;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Dtos.Inbound.Interfaces;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Models;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Validators;
