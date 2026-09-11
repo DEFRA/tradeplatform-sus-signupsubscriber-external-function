@@ -82,9 +82,22 @@ public sealed class RemosSignUpSubscriberServiceBusTriggerFunctionTests
         var createMessageExecutorCall = A.CallTo(() => _messageExecutorFactory.CreateMessageExecutor(message));
         createMessageExecutorCall.Returns(executor);
 
+        var executeCall = A.CallTo(() => executor.ExecuteAsync(
+            A<ServiceBusReceivedMessage>._,
+            A<ServiceBusMessageActions>._,
+            A<ServiceBusSender>._,
+            A<FunctionContext>._,
+            A<string>._,
+            A<string>._,
+            A<string>._,
+            A<string?>._));
+
         // act
-        await _sut.RunAsync(message, actions, functionContext);
+        var exception = await Record.ExceptionAsync(() => _sut.RunAsync(message, actions, functionContext));
 
         // assert - unknown label is caught internally and logged, no exception should propagate
+        Assert.Null(exception);
+        createMessageExecutorCall.MustHaveHappenedOnceExactly();
+        executeCall.MustNotHaveHappened();
     }
 }
