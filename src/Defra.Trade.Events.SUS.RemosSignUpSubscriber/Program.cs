@@ -1,7 +1,6 @@
 // Copyright DEFRA (c). All rights reserved.
 // Licensed under the Open Government License v3.0.
 
-using System.Diagnostics.CodeAnalysis;
 using Azure.Messaging.ServiceBus;
 using Defra.Trade.Common.AppConfig;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber;
@@ -60,8 +59,3 @@ var host = new HostBuilder()
     .Build();
 
 await host.RunAsync();
-
-[ExcludeFromCodeCoverage(Justification = "Application entry point / composition root; not unit testable.")]
-public partial class Program
-{
-}
