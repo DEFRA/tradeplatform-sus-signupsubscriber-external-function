@@ -58,7 +58,7 @@ public sealed class RemosSignUpRequestProfileTests
                     ApprovalStatus = 434800000,
                     Email = l.ContactEmailAddress,
                     Id = new Guid?(),
-                    LastModifiedDate =  DateTime.Now,
+                    LastModifiedDate = DateTime.Now,
                     NI_GBFlag = "test",
                     CreatedDate = DateTime.Now,
                     TradeAddressId = new Guid?(),

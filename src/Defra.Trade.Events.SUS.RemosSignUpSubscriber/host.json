@@ -6,6 +6,13 @@
                 "isEnabled": true,
                 "excludedTypes": "Request"
             }
+        },
+        "logLevel": {
+            "Defra.Trade.Events.SUS.RemosSignUpSubscriber": "Information"
         }
+    },
+    "extensionBundle": {
+        "id": "Microsoft.Azure.Functions.ExtensionBundle",
+        "version": "[4.*, 5.0.0)"
     }
 }

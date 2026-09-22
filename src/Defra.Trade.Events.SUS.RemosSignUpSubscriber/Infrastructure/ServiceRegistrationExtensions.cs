@@ -2,10 +2,10 @@
 // Licensed under the Open Government License v3.0.
 
 using Defra.Trade.Common.Config;
-using Defra.Trade.Common.Functions.EventStore;
-using Defra.Trade.Common.Functions.Extensions;
-using Defra.Trade.Common.Functions.Interfaces;
-using Defra.Trade.Common.Functions.Validation;
+using Defra.Trade.Common.Functions.Isolated.EventStore;
+using Defra.Trade.Common.Functions.Isolated.Extensions;
+using Defra.Trade.Common.Functions.Isolated.Interfaces;
+using Defra.Trade.Common.Functions.Isolated.Validation;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Dtos.Inbound;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Infrastructure;
 using Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Models;

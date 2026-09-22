@@ -3,7 +3,7 @@
 
 using AutoMapper;
 using Azure.Messaging.ServiceBus;
-using Defra.Trade.Common.Functions.Models;
+using Defra.Trade.Common.Functions.Isolated.Models;
 using Establishment = Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Dtos.Inbound.Establishment;
 using SignUp = Defra.Trade.Events.SUS.RemosSignUpSubscriber.Application.Dtos.Inbound.SignUp;
 

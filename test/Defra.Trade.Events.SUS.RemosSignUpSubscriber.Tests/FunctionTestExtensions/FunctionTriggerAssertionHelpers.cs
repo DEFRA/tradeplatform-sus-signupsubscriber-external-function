@@ -2,7 +2,7 @@
 // Licensed under the Open Government License v3.0.
 
 using System.Reflection;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
 using Shouldly;
 
 namespace Defra.Trade.Events.SUS.RemosSignUpSubscriber.FunctionTestExtensions;
