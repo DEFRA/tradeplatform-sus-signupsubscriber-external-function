@@ -55,7 +55,7 @@ public sealed class OrganisationSignup
     [CrmProperty("rms_remosid")]
     public string? RmsBusinessSchemeNumber { get; set; }
 
-    [CrmProperty("rms_requestsubmittedon")]
+    [CrmProperty("rms_rmsrequestsubmittedon")]
     public DateTimeOffset? RmsSignUpRequestSubmittedOn { get; set; }
 
     [CrmProperty("rms_rmstncaccepted")]
